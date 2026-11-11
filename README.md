@@ -48,3 +48,28 @@ APK อยู่ที่ `app/build/outputs/apk/{debug,release}/`
 - `usesCleartextTraffic="true"` เปิดไว้เพราะ IPTV จำนวนมากเสิร์ฟผ่าน `http://` — ถ้าใช้แต่ `https://` ควรปิด
 - ยังไม่มีการทดสอบบนอุปกรณ์/emulator ใน CI (มีแค่ unit test ของ parser)
 - ทั้งหมดนี้ gen ด้วย deepseek harness ไม่รอบผมหากนำไปใช้
+
+## วิธีติดตั้ง APK (จากหน้า Releases)
+
+ดาวน์โหลด `mediabox-release.apk` จากแท็บ **Releases** (ตัวล่าสุด) แล้ว:
+
+```bash
+adb install mediabox-release.apk
+# ถ้าขึ้น INSTALL_FAILED_UPDATE_INCOMPATIBLE (ลายเซ็นไม่ตรงกับตัวเก่า):
+adb uninstall com.mediabox.tv && adb install mediabox-release.apk
+```
+
+> APK ที่ build บน GitHub runner ถูกเซ็นด้วย debug key ที่ **สร้างใหม่ทุกเครื่อง/ทุก runner**
+> ลายเซ็นจึงไม่ตรงกับ APK ที่ build ในเครื่องคุณ → ต้อง `adb uninstall` ก่อนติดตั้งทับเสมอ
+
+## วิธีใส่ playlist ของคุณเอง
+
+ในแอปมี 2 ปุ่มมุมขวาบน:
+
+| ปุ่ม | ทำอะไร |
+|---|---|
+| **+ เพิ่มจาก URL** | กรอก playlist URL (http/https) แล้วกด "บันทึกและโหลด" — ใน dialog มีปุ่มย่อย "เปิดไฟล์ .m3u ในเครื่อง" และ "ใช้ตัวอย่างในแอป" |
+| **+ เปิดไฟล์ .m3u** | เปิด file picker ของ Android เลือกไฟล์ playlist ในเครื่อง (เก็บสิทธิ์ถาวร อ่านซ้ำได้หลังปิดแอป) |
+
+ทั้งสองทางจำค่าไว้ใน SharedPreferences — เปิดแอปครั้งต่อไปโหลดแหล่งเดิมอัตโนมัติ
+
