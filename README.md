@@ -47,3 +47,4 @@ APK อยู่ที่ `app/build/outputs/apk/{debug,release}/`
 - release build เซ็นด้วย **debug key** (`app/build.gradle.kts`) เพื่อให้ได้ `app-release.apk` ที่ติดตั้งได้โดยไม่ต้องมี keystore — **ห้ามใช้ขึ้น Play Store** ให้เปลี่ยนเป็น signing config ของจริงผ่าน GitHub Secrets
 - `usesCleartextTraffic="true"` เปิดไว้เพราะ IPTV จำนวนมากเสิร์ฟผ่าน `http://` — ถ้าใช้แต่ `https://` ควรปิด
 - ยังไม่มีการทดสอบบนอุปกรณ์/emulator ใน CI (มีแค่ unit test ของ parser)
+- ทั้งหมดนี้ gen ด้วย deepseek harness ไม่รอบผมหากนำไปใช้
