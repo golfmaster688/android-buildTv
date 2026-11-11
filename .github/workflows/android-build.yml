@@ -50,18 +50,20 @@ jobs:
       - name: Build Debug + Release APK
         run: ./gradlew assembleDebug assembleRelease
 
+      # path แบบไม่ขึ้นต้นด้วย ** เพื่อให้ artifact แบน (app-release.apk อยู่ที่ root ของ artifact)
+      # wildcard ที่ชื่อไฟล์ยังรองรับ flavor ได้ เช่น app-<flavor>-release.apk
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: mediabox-debug-apk
-          path: '**/build/outputs/apk/debug/*.apk'
+          path: 'app/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: mediabox-release-apk
-          path: '**/build/outputs/apk/release/*.apk'
+          path: 'app/build/outputs/apk/release/*.apk'
           if-no-files-found: error
 
   release:
