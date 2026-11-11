@@ -9,8 +9,11 @@ on:
     types:
       - published
 
+# GITHUB_TOKEN ของ repo ใหม่เป็น read-only โดย default
+permissions:
+  contents: read
+
 env:
-  GRADLE_VERSION: 8.5
   JAVA_VERSION: 17
   ANDROID_API_LEVEL: 34
   ANDROID_BUILD_TOOLS_VERSION: 34.0.0
@@ -23,57 +26,64 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # NOTE: ไม่ใส่ cache: gradle เพราะ setup-java จะ hard-fail
+      # ("No file ... matched to [**/*.gradle*]") เมื่อ repo ยังไม่มี gradle files
+      # ถ้าต้องการ cache ให้ใช้ gradle/actions/setup-gradle@v4 หลัง checkout แทน
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          cache: gradle
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          build-tools-version: ${{ env.ANDROID_BUILD_TOOLS_VERSION }}
+          # v3 ไม่มี input api-level/build-tools-version — ต้องใส่ผ่าน packages
+          packages: >-
+            platform-tools
+            platforms;android-${{ env.ANDROID_API_LEVEL }}
+            build-tools;${{ env.ANDROID_BUILD_TOOLS_VERSION }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build Debug + Release APK
+        run: ./gradlew assembleDebug assembleRelease
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: mediabox-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Build Release APK
-        run: ./gradlew assembleRelease
+          path: '**/build/outputs/apk/debug/*.apk'
+          if-no-files-found: error
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: mediabox-release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+          path: '**/build/outputs/apk/release/*.apk'
+          if-no-files-found: error
 
   release:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+    permissions:
+      contents: write
 
     steps:
       - name: Download Release APK
         uses: actions/download-artifact@v4
         with:
           name: mediabox-release-apk
-          path: ./
+          path: ./artifacts
 
       - name: Attach APK to Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: mediabox-release-apk/app-release.apk
+          file: artifacts/app-release.apk
+          file_glob: false
           asset_name: mediabox-release.apk
-          tag: ${{ github.ref }}
+          tag: ${{ github.event.release.tag_name }}
           overwrite: true
