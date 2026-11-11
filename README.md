@@ -8,6 +8,8 @@
 - Parser M3U/M3U8 รองรับ `tvg-name`, `tvg-logo`, `group-title`, CRLF, comment, ชื่อที่มี comma
 - รายการช่องแบบ D-pad focus ได้ (Android TV remote)
 - เล่นวิดีโอด้วย **Media3 / ExoPlayer** พร้อม `media3-exoplayer-hls` → รองรับ HLS (`.m3u8`)
+- **User-Agent แบบ browser** ในทุก request (portal จำนวนมากตอบ HTTP 461 ถ้า UA ว่าง) — ทดสอบกับ portal จริงแล้ว
+- **เดาชนิด HLS จาก query** (`extension=m3u8`) ไม่ใช่แค่ path, และลองสลับชนิดอีกครั้งถ้าเล่นไม่ขึ้น
 - ล็อกอินเทอร์เน็ตผ่าน `HttpURLConnection` (ไม่เพิ่ม dependency HTTP)
 
 ## โครงสร้าง

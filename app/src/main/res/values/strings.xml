@@ -25,4 +25,5 @@
     <!-- Player -->
     <string name="player_error">เล่นไม่สำเร็จ: %1$s</string>
     <string name="player_buffering">กำลังบัฟเฟอร์…</string>
+    <string name="retrying">กำลังลองรูปแบบอื่น… (%1$s)</string>
 </resources>
