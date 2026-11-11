@@ -1,6 +1,7 @@
 package com.mediabox.tv.data;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -15,7 +16,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * โหลด playlist จาก asset ที่ bundle มากับแอป หรือจาก URL ที่ผู้ใช้กรอก
+ * โหลด playlist ได้ 3 แหล่ง:
+ * <ul>
+ *   <li>{@code null} หรือว่าง → asset ที่ bundle มากับแอป</li>
+ *   <li>{@code content://…} → ไฟล์ที่ผู้ใช้เลือกผ่าน file picker (SAF)</li>
+ *   <li>{@code http(s)://…} → playlist บนเครือข่าย</li>
+ * </ul>
  * ทำงานบน background thread แล้ว callback กลับมาบน main thread
  */
 public final class PlaylistRepository {
@@ -23,6 +29,8 @@ public final class PlaylistRepository {
     public static final String ASSET_PLAYLIST = "channels.m3u";
     private static final int TIMEOUT_MS = 15000;
     private static final int MAX_BYTES = 8 * 1024 * 1024;
+
+    public static final String SOURCE_ASSET = "asset:" + ASSET_PLAYLIST;
 
     public interface Callback {
         void onLoaded(List<Channel> channels, String source);
@@ -42,23 +50,49 @@ public final class PlaylistRepository {
         this.appContext = context.getApplicationContext();
     }
 
-    /** @param url null หรือว่าง = ใช้ playlist ที่ bundle มากับแอป */
-    public void load(final String url, final Callback callback) {
+    public static boolean isRemote(String source) {
+        return source != null && (source.startsWith("http://") || source.startsWith("https://"));
+    }
+
+    public static boolean isLocalFile(String source) {
+        return source != null && source.startsWith("content://");
+    }
+
+    public static String describe(String source) {
+        if (source == null || source.trim().isEmpty()) {
+            return SOURCE_ASSET;
+        }
+        if (isLocalFile(source)) {
+            return "ไฟล์ในเครื่อง";
+        }
+        return source;
+    }
+
+    /** @param source null/ว่าง = asset, content:// = ไฟล์ในเครื่อง, http(s):// = เครือข่าย */
+    public void load(final String source, final Callback callback) {
+        final String trimmed = (source == null) ? "" : source.trim();
+        final String label = describe(trimmed);
+
         io.execute(() -> {
-            String source = (url == null || url.trim().isEmpty())
-                    ? "asset:" + ASSET_PLAYLIST
-                    : url.trim();
             try {
-                String content = (url == null || url.trim().isEmpty())
-                        ? readAsset()
-                        : readUrl(url.trim());
+                String content;
+                if (trimmed.isEmpty()) {
+                    content = readAsset();
+                } else if (isLocalFile(trimmed)) {
+                    content = readContentUri(Uri.parse(trimmed));
+                } else if (isRemote(trimmed)) {
+                    content = readUrl(trimmed);
+                } else {
+                    throw new IOException("ไม่รู้จักแหล่ง playlist: " + trimmed);
+                }
+
                 List<Channel> channels = M3UParser.parse(content);
                 if (channels.isEmpty()) {
                     throw new IOException("playlist ไม่มีช่องที่เล่นได้ (" + content.length() + " ตัวอักษร)");
                 }
-                main.post(() -> callback.onLoaded(channels, source));
+                main.post(() -> callback.onLoaded(channels, label));
             } catch (Exception e) {
-                main.post(() -> callback.onError(source, e));
+                main.post(() -> callback.onError(label, e));
             }
         });
     }
@@ -69,12 +103,22 @@ public final class PlaylistRepository {
         }
     }
 
+    /** ไฟล์ที่ผู้ใช้เลือกผ่าน SAF — ต้องมีสิทธิ์แบบ persistable เก็บไว้แล้ว */
+    private String readContentUri(Uri uri) throws IOException {
+        try (InputStream in = appContext.getContentResolver().openInputStream(uri)) {
+            if (in == null) {
+                throw new IOException("เปิดไฟล์ไม่ได้ (openInputStream ได้ null): " + uri);
+            }
+            return readAll(in);
+        }
+    }
+
     private String readUrl(String url) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setConnectTimeout(TIMEOUT_MS);
         conn.setReadTimeout(TIMEOUT_MS);
         conn.setInstanceFollowRedirects(true);
-        conn.setRequestProperty("User-Agent", "MediaboxTV/1.0");
+        conn.setRequestProperty("User-Agent", "MediaboxTV/1.1");
         try {
             int code = conn.getResponseCode();
             if (code < 200 || code >= 300) {

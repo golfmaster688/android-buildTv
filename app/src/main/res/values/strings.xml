@@ -8,13 +8,17 @@
     <string name="playlist_source">playlist: %1$s</string>
     <string name="loading_playlist">กำลังโหลด playlist…</string>
     <string name="error_loading">โหลด playlist ไม่สำเร็จ: %1$s</string>
-    <string name="empty_playlist">ไม่พบช่องใน playlist นี้\nกด “ตั้งค่า playlist” เพื่อเปลี่ยนแหล่ง</string>
+    <string name="empty_playlist">ไม่พบช่องใน playlist นี้\nกด “+ เพิ่มจาก URL” หรือ “+ เปิดไฟล์ .m3u” เพื่อเปลี่ยนแหล่ง</string>
     <string name="change_playlist">ตั้งค่า playlist</string>
+    <string name="add_url">+ เพิ่มจาก URL</string>
+    <string name="open_file">+ เปิดไฟล์ .m3u</string>
+    <string name="no_file_picker">เครื่องนี้ไม่มีตัวเลือกไฟล์ (file picker)</string>
     <string name="playlist_dialog_title">แหล่ง playlist</string>
     <string name="playlist_dialog_hint">https://…/playlist.m3u</string>
     <string name="playlist_dialog_help">เว้นว่าง = ใช้ playlist ตัวอย่างที่ติดมากับแอป</string>
     <string name="action_apply">บันทึกและโหลด</string>
     <string name="action_use_bundled">ใช้ตัวอย่างในแอป</string>
+    <string name="action_open_file">เปิดไฟล์ .m3u ในเครื่อง</string>
     <string name="action_cancel">ยกเลิก</string>
     <string name="channel_count">%1$d ช่อง</string>
 

@@ -26,12 +26,21 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/btn_playlist"
+            android:id="@+id/btn_add_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:focusable="true"
+            android:nextFocusDown="@id/list_channels"
+            android:text="@string/add_url" />
+
+        <Button
+            android:id="@+id/btn_open_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="true"
             android:nextFocusDown="@id/list_channels"
-            android:text="@string/change_playlist" />
+            android:text="@string/open_file" />
     </LinearLayout>
 
     <TextView
@@ -65,7 +74,7 @@
             android:descendantFocusability="afterDescendants"
             android:focusable="true"
             android:focusedByDefault="true"
-            android:nextFocusUp="@id/btn_playlist"
+            android:nextFocusUp="@id/btn_open_file"
             android:paddingBottom="24dp"
             android:scrollbars="vertical" />
 
