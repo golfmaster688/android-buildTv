@@ -30,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="true"
+            android:nextFocusDown="@id/list_channels"
             android:text="@string/change_playlist" />
     </LinearLayout>
 
@@ -61,6 +62,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:descendantFocusability="afterDescendants"
+            android:focusable="true"
+            android:focusedByDefault="true"
+            android:nextFocusUp="@id/btn_playlist"
             android:paddingBottom="24dp"
             android:scrollbars="vertical" />
 

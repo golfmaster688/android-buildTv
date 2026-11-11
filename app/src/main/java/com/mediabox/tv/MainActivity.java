@@ -82,8 +82,9 @@ public class MainActivity extends Activity {
                         + " · " + getString(R.string.channel_count, channels.size()));
                 emptyView.setVisibility(channels.isEmpty() ? View.VISIBLE : View.GONE);
 
-                // ให้ D-pad โฟกัสแถวแรกทันที
+                // ให้ D-pad โฟกัสแถวแรกทันที (ไม่ใช่ปุ่มตั้งค่า playlist)
                 listView.post(() -> {
+                    listView.requestFocus();
                     RecyclerView.ViewHolder first = listView.findViewHolderForAdapterPosition(0);
                     if (first != null) {
                         first.itemView.requestFocus();
