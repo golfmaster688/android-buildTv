@@ -10,8 +10,8 @@ android {
         applicationId = "com.mediabox.tv"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     buildTypes {
@@ -29,6 +29,26 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        buildConfig = false
+    }
+
+    // ให้ unit test อ่านไฟล์ใน assets ได้ (ใช้ทดสอบ parser กับ playlist จริงที่ bundle มา)
+    sourceSets {
+        getByName("test") {
+            resources.srcDirs("src/main/assets")
+        }
+    }
 }
 
-// ไม่มี external dependency — ใช้ Android framework ล้วน
+dependencies {
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    // Media3 / ExoPlayer — ตัวเล่นวิดีโอ + HLS
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
+
+    testImplementation("junit:junit:4.13.2")
+}

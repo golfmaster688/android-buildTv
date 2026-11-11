@@ -2,4 +2,23 @@
 <resources>
     <string name="app_name">Mediabox</string>
     <string name="build_info">Android %1$s · %2$s</string>
+
+    <!-- Main screen -->
+    <string name="channels_header">ช่องทั้งหมด</string>
+    <string name="playlist_source">playlist: %1$s</string>
+    <string name="loading_playlist">กำลังโหลด playlist…</string>
+    <string name="error_loading">โหลด playlist ไม่สำเร็จ: %1$s</string>
+    <string name="empty_playlist">ไม่พบช่องใน playlist นี้\nกด “ตั้งค่า playlist” เพื่อเปลี่ยนแหล่ง</string>
+    <string name="change_playlist">ตั้งค่า playlist</string>
+    <string name="playlist_dialog_title">แหล่ง playlist</string>
+    <string name="playlist_dialog_hint">https://…/playlist.m3u</string>
+    <string name="playlist_dialog_help">เว้นว่าง = ใช้ playlist ตัวอย่างที่ติดมากับแอป</string>
+    <string name="action_apply">บันทึกและโหลด</string>
+    <string name="action_use_bundled">ใช้ตัวอย่างในแอป</string>
+    <string name="action_cancel">ยกเลิก</string>
+    <string name="channel_count">%1$d ช่อง</string>
+
+    <!-- Player -->
+    <string name="player_error">เล่นไม่สำเร็จ: %1$s</string>
+    <string name="player_buffering">กำลังบัฟเฟอร์…</string>
 </resources>
